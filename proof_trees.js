@@ -7,12 +7,23 @@ let font,
   inp1,
   inp2,
   button1,
-  button2;
+  button2,
+  button3,
+  button4,
+  button5,
+  b1,b2,b3,b4,b5;
 
 let root = null;
-let pressed_node = null;
+let parent = null;
+let child = null;
 let cnt = 0;
 let tex_generated = false;
+let links_on = false;
+b1 = false;
+b2 = false;
+b3 = false;
+b4 = false;
+b5 = false;
 
 function preload() {
   font = loadFont('arial.ttf');
@@ -34,7 +45,15 @@ function setup(){
 	button2 = createButton('Get Tex');
 	button2.position(715,30);
 	button2.mousePressed(get_tex);
-
+	button3 = createButton('Link');
+	button3.position(855,30);
+	button3.mousePressed(link);
+	button4 = createButton('Get Info');
+	button4.position(575,100);
+	button4.mousePressed(get_info);
+	button5 = createButton('Toggle Links');
+	button5.position(715,100);
+	button5.mousePressed(toggle_links);
 }
 
 function draw(){
@@ -47,20 +66,48 @@ function draw(){
 		for(let i = 0; i < infers.length;i++){
 			infers[i].show(x,y);
 		}
+
+		if(links_on){
+			drawingContext.setLineDash([5,15]);
+			for(let i = 0; i < infers.length; i++){
+				for(let j = 0; j < infers[i].children.length; j++){
+					let px = infers[i].x;
+					let py = infers[i].y;
+					let cx = infers[i].children[j].x;
+					let cy = infers[i].children[j].y;
+					let rx = px - cx;
+					let ry = py - cy;
+					v0 = createVector(rx,ry);
+					v1 = createVector(cx,cy);
+					drawArrow(v1,v0,'blue');
+				}
+			}
+			drawingContext.setLineDash([]);
+		}
+
+		b1 = false;
+		b2 = false;
+		b3 = false;
+		b4 = false;
+		b5 = false;
 	}
 }
 
-function doubleClicked(){
-	if(root == null){	
-		let x = mouseX;
-		let y = mouseY;
-		
-		infr = new Inference(x,y,inp1.value(),inp2.value(),[]);
-		infers.push(infr);
-		infr.show(x,y);
-		root = infr;
-	}
+//How does this work?
+function drawArrow(base, vec, myColor) {
+  push();
+  stroke(myColor);
+  strokeWeight(3);
+  fill(myColor);
+  translate(base.x, base.y);
+  line(0, 0, vec.x, vec.y);
+  rotate(vec.heading());
+  let arrowSize = 7;
+  translate(vec.mag() - arrowSize, 0);
+  triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+  pop();
 }
+
 
 function mousePressed(){
 	let x = mouseX;
@@ -77,16 +124,31 @@ function mouseReleased(){
 }
 
 function add_node(){
-	if(pressed_node != null){
-		let x = 100;
-		let y = 200;
-		
-		infr = new Inference(x,y,inp1.value(),inp2.value(),[]);
-		infers.push(infr);
-		infr.show(x,y);
-		
-		pressed_node.children.push(infr);
+	b1 = true;
+	let x = 100;
+	let y = 200;
+	
+	infr = new Inference(x,y,inp1.value(),inp2.value(),[]);
+	infers.push(infr);
+	infr.show(x,y);
+	
+	if(root == null){root = infr;}
+}
+
+function link(){
+	b3 = true;
+	if(parent != null && child != null){
+		console.log("LINKING");
+		parent.children.push(child);
+		parent.is_parent = false;
+		child.is_child = false;
+		parent =null;
+		child = null;
 	}
+}
+
+function touching_button(){
+	return b1 || b2 || b3 || b4 || b5;
 }
 
 class Inference{
@@ -99,7 +161,8 @@ class Inference{
 		this.conc = conc;
 		this.label = label;
 		this.children = children
-		this.is_selected = false;
+		this.is_child = false;
+		this.is_parent = false;
 		this.id = cnt;
 		cnt=cnt+1;
    }
@@ -112,12 +175,29 @@ class Inference{
     
     //Need to center w.r.t line somehow
     let conc_bbox = font.textBounds(this.conc,this.x,this.y,fontsize);
-    if(this.is_selected){
+    if(this.is_parent){
+    	//console.log("Is parent");
+    	//console.log(this.id);
+    	stroke(0);
     	strokeWeight(1);
 	    text(this.conc,this.x,this.y);
 	    //Will need to configure depending on assumptions
 	    strokeWeight(4);
 	    stroke(255,0,0);
+	    line(conc_bbox.x-10,conc_bbox.y-10,conc_bbox.x+conc_bbox.w+10,conc_bbox.y-10);
+	    strokeWeight(1);
+	    stroke(0);
+	    text(this.label,conc_bbox.x + conc_bbox.w + 15,conc_bbox.y-5);
+	}
+	else if(this.is_child){
+		//console.log("Is child");
+    	//console.log(this.id);
+		stroke(0);
+		strokeWeight(1);
+	    text(this.conc,this.x,this.y);
+	    //Will need to configure depending on assumptions
+	    strokeWeight(4);
+	    stroke(0,0,255);
 	    line(conc_bbox.x-10,conc_bbox.y-10,conc_bbox.x+conc_bbox.w+10,conc_bbox.y-10);
 	    strokeWeight(1);
 	    stroke(0);
@@ -147,15 +227,15 @@ class Inference{
       // print(this.offsetX);
       this.offsetY = this.y - py;
       // print(this.offsetY);
-      pressed_node = this;
-      this.is_selected = true;
+      parent = this;
+  	  this.is_parent = true;
 
-      this.print_children();
+      //this.print_info();
 
     }
-    else{
-    	if(pressed_node != null && pressed_node.id == this.id){pressed_node = null;}
-    	this.is_selected = false;
+    else if(!touching_button()){
+    	if(this.is_parent){parent = null; child = this; this.is_parent = false; this.is_child = true;}
+    	else if(this.is_child){child = null; this.is_child = false;}
     }
   }
 
@@ -163,12 +243,31 @@ class Inference{
       this.dragging = false;
   }
 
-  print_children(){
+  print_info(){
+  	  console.log("Info: " + this.id);
+
+  	  console.log(this.is_parent);
+  	  console.log(this.is_child);
+
+  	  console.log("Children:");
   	  for(let i = 0; i < this.children.length; i++){
   	  	console.log(this.children[i].id);
   	  }
   }
 
+}
+
+function get_info(){
+	b4 = true;
+	for(let i = 0; i < infers.length; i++){
+		infers[i].print_info();
+	}
+}
+
+function toggle_links(){
+	b5 = true;
+	links_on = !links_on;
+	console.log(links_on);
 }
 
 function convert_to_tex(node){
@@ -190,6 +289,7 @@ function convert_to_tex(node){
 }
 
 function get_tex(){
+	b2 = true;
 	console.log(root);
 	if(root != null){
 		let tex = convert_to_tex(root);
