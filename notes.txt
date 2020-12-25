@@ -1,0 +1,25 @@
+Need:
+	Double click to create line
+	Shift + left/right to resize(or select arrows)
+	Shift + up to type above(or select text)
+	Shift + down to type below(or select text)
+	Shift + right right to annotate(or select text)
+	Translate by arrow keys or dragging
+
+Currently what I'm doing can be easily replicated in Word: But the point is to generate latex that constructs the proof treess
+
+Automatically Generating Latex: https://tex.stackexchange.com/questions/26972/what-gui-applications-are-there-to-assist-in-generating-graphics-for-tex
+
+To represent proof tree can just construct tree datastructure. Then to go from GUI to proof tree we go from GUI to tree to proof tree(latex)
+
+Tree structure:
+	Nodes:
+		Label: 1
+		Conclusion: 1
+	Arbitrary number of children
+
+Development Annoyances:
+	1. Had to fix CORS error with: https://github.com/processing/p5.js/issues/3885
+
+Solved Hard Problems:
+	
