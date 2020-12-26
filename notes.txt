@@ -1,10 +1,8 @@
 Need:
-	Double click to create line
-	Shift + left/right to resize(or select arrows)
-	Shift + up to type above(or select text)
-	Shift + down to type below(or select text)
-	Shift + right right to annotate(or select text)
-	Translate by arrow keys or dragging
+	Click button to make nodes
+	Translate by dragging with mouse
+	Link parent and children dynamically
+	double click deletes
 
 Currently what I'm doing can be easily replicated in Word: But the point is to generate latex that constructs the proof treess
 
@@ -20,6 +18,10 @@ Tree structure:
 
 Development Annoyances:
 	1. Had to fix CORS error with: https://github.com/processing/p5.js/issues/3885
+
+Potential Issues:
+	1. Linking system may not give right order as suggested by GUI(is instead determined by order of link button click/child list)
+	2. Need to approptiately resize lines to fit all children premises
 
 Solved Hard Problems:
 	

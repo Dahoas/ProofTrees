@@ -182,56 +182,67 @@ class Inference{
     }
     
     //Need to center w.r.t line somehow
-    let conc_bbox = font.textBounds(this.conc,this.x,this.y,fontsize);
+    let child_len = 0;
+
+    for(let i = 0; i < this.children.length; i++){
+    	child_len = child_len + 5 + font.textBounds(this.children[i].conc,0,0,fontsize).w;
+    }
+
+    let conc_bbox = font.textBounds(this.conc,0,0,fontsize);
+
+    let parent_len = conc_bbox.w + 20;
+
+    let line_len = max(parent_len,child_len);
     if(this.is_parent){
+    	strokeWeight(4);
+	    stroke(255,0,0);
+	    line(this.x,this.y,this.x+line_len,this.y);
     	//console.log("Is parent");
     	//console.log(this.id);
     	stroke(0);
     	strokeWeight(1);
-	    text(this.conc,this.x,this.y);
-	    //Will need to configure depending on assumptions
-	    strokeWeight(4);
-	    stroke(255,0,0);
-	    line(conc_bbox.x-10,conc_bbox.y-10,conc_bbox.x+conc_bbox.w+10,conc_bbox.y-10);
-	    strokeWeight(1);
-	    stroke(0);
-	    text(this.label,conc_bbox.x + conc_bbox.w + 15,conc_bbox.y-5);
+    	textAlign(CENTER);
+	    text(this.conc,(this.x+this.x+line_len)/2,this.y+20);
+	    textAlign(LEFT);
+	    text(this.label,this.x+line_len + 15,this.y+5);
 	}
 	else if(this.is_child){
-		//console.log("Is child");
-    	//console.log(this.id);
-		stroke(0);
-		strokeWeight(1);
-	    text(this.conc,this.x,this.y);
-	    //Will need to configure depending on assumptions
-	    strokeWeight(4);
+		strokeWeight(4);
 	    stroke(0,0,255);
-	    line(conc_bbox.x-10,conc_bbox.y-10,conc_bbox.x+conc_bbox.w+10,conc_bbox.y-10);
-	    strokeWeight(1);
-	    stroke(0);
-	    text(this.label,conc_bbox.x + conc_bbox.w + 15,conc_bbox.y-5);
+	    line(this.x,this.y,this.x+line_len,this.y);
+    	//console.log("Is parent");
+    	//console.log(this.id);
+    	stroke(0);
+    	strokeWeight(1);
+    	textAlign(CENTER);
+	    text(this.conc,(this.x+this.x+line_len)/2,this.y+20);
+	    textAlign(LEFT);
+	    text(this.label,this.x+line_len + 15,this.y+5);
 	}
 	else{
-		stroke(0);
-		strokeWeight(1);
-		text(this.conc,this.x,this.y);
-	    //Will need to configure depending on assumptions
-	    strokeWeight(4);
-	    line(conc_bbox.x-10,conc_bbox.y-10,conc_bbox.x+conc_bbox.w+10,conc_bbox.y-10);
-	    strokeWeight(1);
-	    text(this.label,conc_bbox.x+ conc_bbox.w + 15,conc_bbox.y-5);
+		strokeWeight(4);
+	    stroke(0);
+	    line(this.x,this.y,this.x+line_len,this.y);
+    	//console.log("Is parent");
+    	//console.log(this.id);
+    	strokeWeight(1);
+    	textAlign(CENTER);
+	    text(this.conc,(this.x+this.x+line_len)/2,this.y+20);
+	    textAlign(LEFT);
+	    text(this.label,this.x+line_len + 15,this.y+5);
 	}
 
-    this.bb_x = conc_bbox.x-10;
-    this.bb_y = conc_bbox.y-10;
-    this.bb_w = conc_bbox.w+20;
+    this.bb_x = this.x;
+    this.bb_y = this.y;
+    this.bb_w = line_len;
     this.bb_h = conc_bbox.h+10;
   }
 
   pressed(px, py) {
     if (px < this.bb_x + this.bb_w && px > this.bb_x && py > this.bb_y && py < this.bb_y+this.bb_h) {
       this.dragging = true;
-      this.offsetX = this.x - px;
+      this.offsetX = this.x - px;;
+
       // print(this.offsetX);
       this.offsetY = this.y - py;
       // print(this.offsetY);
