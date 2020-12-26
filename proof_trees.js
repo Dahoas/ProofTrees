@@ -242,7 +242,7 @@ class Inference{
 
     }
     else if(!touching_button()){
-    	if(this.is_parent){parent = null; child = this; this.is_parent = false; this.is_child = true;}
+    	if(this.is_parent){child = this; this.is_parent = false; this.is_child = true;}
     	else if(this.is_child){child = null; this.is_child = false;}
     }
   }
@@ -288,11 +288,14 @@ function convert_to_tex(node){
 	let children = "";
 	for(let i = 0; i < node.children.length; i++){
 		let res = convert_to_tex(node.children[i]);
+    if (i > 0) {
+      children += " & ";
+    }
 		children = children + res;
 	}
 	children = "{" + children + "}";
 	tex = tex + children;
-	tex = "{" + tex + "}";
+	//tex = "{" + tex + "}";
 	return tex;
 }
 
