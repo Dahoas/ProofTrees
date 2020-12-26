@@ -108,6 +108,14 @@ function drawArrow(base, vec, myColor) {
   pop();
 }
 
+function doubleClicked(){
+	for(let i = 0; i < infers.length; i++){
+		if(infers[i].is_parent){
+			infers.splice(i,1);
+			break;
+		}
+	}
+}
 
 function mousePressed(){
 	let x = mouseX;
