@@ -185,7 +185,7 @@ class Inference{
     let child_len = 0;
 
     for(let i = 0; i < this.children.length; i++){
-    	child_len = child_len + 5 + font.textBounds(this.children[i].conc,0,0,fontsize).w;
+    	child_len = child_len + 5 +this.children[i].bb_w;
     }
 
     let conc_bbox = font.textBounds(this.conc,0,0,fontsize);
