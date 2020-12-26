@@ -8,4 +8,6 @@ A proof tree is composed of a set of nodes where each node has an inference labe
 
 Double click to delete a node(but only if not yet linked).
 
+Drag a node to move it.
+
 NOTE: Generated tex only compatible with proof latex package.
